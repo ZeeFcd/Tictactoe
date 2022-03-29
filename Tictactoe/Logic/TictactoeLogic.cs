@@ -19,6 +19,7 @@ namespace Tictactoe.Logic
         public string Winner { get; set; }
 
         public event EventHandler GameOver;
+        public event EventHandler Draw;
         public GameItem[,] GameMatrix { get; set; }
         public int[] LastStep { get; set; }
         public GameItem LastItem { get; set; }
@@ -46,13 +47,22 @@ namespace Tictactoe.Logic
                 }
                 else
                 {
-                    MachineStep();
-                    if (IsFinished())
+                    if (IsEmptyMap())
                     {
-                        Winner = "The game";
-                        GameOver?.Invoke(this, null);
+                        Draw?.Invoke(this, null);
                         Mapreset();
                     }
+                    else
+                    {
+                        MachineStep();
+                        if (IsFinished())
+                        {
+                            Winner = "The game";
+                            GameOver?.Invoke(this, null);
+                            Mapreset();
+                        }
+                    }
+                    
                 }
 
             }
@@ -213,6 +223,29 @@ namespace Tictactoe.Logic
                     GameMatrix[i, j] = GameItem.empty;
                 }
             }
+        }
+
+        private bool IsEmptyMap() 
+        {
+            int n = 0;
+            int k = 0;
+
+            while (n<GameMatrix.GetLength(0) && GameMatrix[n,k]!=GameItem.empty)
+            {
+                
+                while (k < GameMatrix.GetLength(1) && GameMatrix[n, k] != GameItem.empty)
+                {
+                    k++;
+                }
+                if (k == GameMatrix.GetLength(1))
+                {
+                    n++;
+                    k = 0;
+                }
+
+            }
+
+            return n == GameMatrix.GetLength(0) ;
         }
 
         private List<int[]> EmptyFields() 

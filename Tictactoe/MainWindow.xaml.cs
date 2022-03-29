@@ -29,8 +29,15 @@ namespace Tictactoe
             InitializeComponent();
             logic = new TictactoeLogic();
             logic.GameOver += Logic_GameOver;
+            logic.Draw += Logic_Draw;
             display.SetupModel(logic);
             controller = new GameController(logic);
+        }
+
+        private void Logic_Draw(object sender, EventArgs e)
+        {
+            display.InvalidateVisual();
+            MessageBox.Show("Draw!");
         }
 
         private void Logic_GameOver(object sender, EventArgs e)
