@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tictactoe.Controller;
+using Tictactoe.Logic;
 
 namespace Tictactoe
 {
@@ -20,21 +22,24 @@ namespace Tictactoe
     /// </summary>
     public partial class MainWindow : Window
     {
+        GameController controller;
         public MainWindow()
         {
             InitializeComponent();
+            TictactoeLogic logic = new TictactoeLogic();
+            display.SetupModel(logic);
+            controller = new GameController(logic);
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (grid.ActualWidth > 0 && grid.ActualHeight > 0)
-            {
+        {        
+            
                 display.Resize(new Size()
                 {
-                    Width = ActualWidth,
-                    Height = ActualHeight
+                    Width = grid.ActualWidth,
+                    Height = grid.ActualHeight
                 });
-            }
+
         }
         
 
@@ -43,37 +48,35 @@ namespace Tictactoe
         {
             if (e.Source.ToString() == "Tictactoe.Display")
             {
-                int cellnumberx = 0;
-                int cellnumbery = 0;
+                
                 int x = (int)e.GetPosition(grid).X;
                 int y = (int)e.GetPosition(grid).Y;
-
-                cellnumberx = x / (int)(display.ActualWidth / 3);
-                cellnumbery = y / (int)(display.ActualHeight / 3);
-
+                int cellnumbery = y / (int)(display.ActualHeight / 3);
+                int cellnumberx = x / (int)(display.ActualWidth / 3);
                
+                
+                int[] coord = { cellnumbery, cellnumberx };
+                //controller.MouseClicked(coord);
+                //display.InvalidateVisual();
+                //int centeri = (int)((cellnumbery) * display.ActualHeight / 3 - display.ActualHeight / 3 / 2);
+                //int centerj= (int)((cellnumberx) * display.ActualWidth / 3 + display.ActualWidth / 3 / 2);
 
-                int midx = ((int)(display.ActualHeight / 3) / 2) * (cellnumberx + 1);
-                int midy = ((int)(display.ActualWidth / 3) / 2) * (cellnumbery + 1);
+                //Line myLine = new Line();
+                //myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+                //myLine.X1 = centerj;
+                //myLine.X2 = 0;
+                //myLine.Y1 = centeri;
+                //myLine.Y2 = 0;
+                //myLine.HorizontalAlignment = HorizontalAlignment.Left;
+                //myLine.VerticalAlignment = VerticalAlignment.Center;
+                //myLine.StrokeThickness = 2;
+                //grid.Children.Add(myLine);
 
-                Line myLine = new Line();
-                myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
-                myLine.X1 = midx;
-                myLine.X2 = 0;
-                myLine.Y1 = midy;
-                myLine.Y2 = 0;
-                myLine.HorizontalAlignment = HorizontalAlignment.Left;
-                myLine.VerticalAlignment = VerticalAlignment.Center;
-                myLine.StrokeThickness = 2;
-                grid.Children.Add(myLine);
+
+
             }
 
-
-
         }
-
-
-
 
     }
 }

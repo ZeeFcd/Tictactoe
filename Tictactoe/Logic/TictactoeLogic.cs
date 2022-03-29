@@ -17,23 +17,27 @@ namespace Tictactoe.Logic
 
         static Random r = new Random();
 
+        public event EventHandler GameOver;
         public GameItem[,] GameMatrix { get; set; }
         public int[] LastStep { get; set; }
         public GameItem LastItem { get; set; }
-        LinkedList<int[,]> linkedListArray; //dfs
+        
 
         public TictactoeLogic()
         {
-            GameMatrix = new GameItem[3, 3];
-            for (int i = 0; i < 3; i++)
+            GameMatrix = new GameItem[4, 4];
+            for (int i = 0; i < GameMatrix.GetLength(0); i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < GameMatrix.GetLength(1); j++)
                 {
                     GameMatrix[i, j]=GameItem.empty;
                 }
             }
 
-            
+            GameMatrix[1,2]= GameItem.o;
+            GameMatrix[1, 1] = GameItem.x;
+
+
         }
 
         public void Step(int[] field)
@@ -42,18 +46,17 @@ namespace Tictactoe.Logic
             LastStep = field;
             if (IsFinished())
             {
-
+                GameOver?.Invoke(this,null);
             }
             else
             {
                 MachineStep();
                 if (IsFinished())
                 {
-
+                    GameOver?.Invoke(this, null);
                 }
             }
         }
-
 
 
 
@@ -62,8 +65,8 @@ namespace Tictactoe.Logic
             bool[,] used = new bool[GameMatrix.GetLength(0), GameMatrix.GetLength(1)];
             int i = LastStep[0];
             int j = LastStep[1];
-            
 
+            return false;
         }
 
         private bool SearchUp(int[] coord, GameItem[,] gameMatrix, GameItem searched) 
