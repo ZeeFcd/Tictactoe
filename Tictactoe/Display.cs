@@ -27,49 +27,51 @@ namespace Tictactoe
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            int rectWidth = (int)size.Width / model.GameMatrix.GetLength(0);
-            int rectHeight = (int)size.Height / model.GameMatrix.GetLength(1);
-
-
-            for (int i = 0; i < model.GameMatrix.GetLength(0); i++)
+            if (model!=null)
             {
-                for (int j = 0; j < model.GameMatrix.GetLength(1); j++)
+                int rectWidth = (int)size.Width / model.GameMatrix.GetLength(0);
+                int rectHeight = (int)size.Height / model.GameMatrix.GetLength(1);
+
+
+                for (int i = 0; i < model.GameMatrix.GetLength(0); i++)
                 {
-                    drawingContext.DrawRectangle(
-                            new SolidColorBrush(Color.FromRgb((byte)220, (byte)220, (byte)220)),
-                            new Pen(Brushes.Black, 2),
-                            new Rect(j * rectWidth, i * rectHeight, rectWidth, rectHeight)
-                            );
-                    
-                    ImageBrush brush = new ImageBrush();
-                    switch (model.GameMatrix[i, j])
+                    for (int j = 0; j < model.GameMatrix.GetLength(1); j++)
                     {
+                        drawingContext.DrawRectangle(
+                                new SolidColorBrush(Color.FromRgb((byte)220, (byte)220, (byte)220)),
+                                new Pen(Brushes.Black, 2),
+                                new Rect(j * rectWidth, i * rectHeight, rectWidth, rectHeight)
+                                );
 
-                        case TictactoeLogic.GameItem.x:
-                            brush = new ImageBrush
-                                (new BitmapImage(new Uri("x.png", UriKind.RelativeOrAbsolute)));
-                            break;
+                        ImageBrush brush = new ImageBrush();
+                        switch (model.GameMatrix[i, j])
+                        {
 
-                        case TictactoeLogic.GameItem.o:
-                            brush = new ImageBrush
-                                (new BitmapImage(new Uri("o.png", UriKind.RelativeOrAbsolute)));
-                            break;
+                            case TictactoeLogic.GameItem.x:
+                                brush = new ImageBrush
+                                    (new BitmapImage(new Uri("x.png", UriKind.RelativeOrAbsolute)));
+                                break;
 
-                        default:
-                            break;
+                            case TictactoeLogic.GameItem.o:
+                                brush = new ImageBrush
+                                    (new BitmapImage(new Uri("o.png", UriKind.RelativeOrAbsolute)));
+                                break;
+
+                            default:
+                                break;
+
+                        }
+
+                        drawingContext.DrawRectangle(brush
+                                        , new Pen(Brushes.Black, 2),
+                                        new Rect(j * rectWidth, i * rectHeight, rectWidth, rectHeight)
+                                        );
 
                     }
-
-                    drawingContext.DrawRectangle(brush
-                                    , new Pen(Brushes.Black, 2),
-                                    new Rect(j * rectWidth, i * rectHeight, rectWidth, rectHeight)
-                                    );
-
                 }
             }
-
+            
         }      
-
     }
     
 }

@@ -23,12 +23,20 @@ namespace Tictactoe
     public partial class MainWindow : Window
     {
         GameController controller;
+        TictactoeLogic logic;
         public MainWindow()
         {
             InitializeComponent();
-            TictactoeLogic logic = new TictactoeLogic();
+            logic = new TictactoeLogic();
+            logic.GameOver += Logic_GameOver;
             display.SetupModel(logic);
             controller = new GameController(logic);
+        }
+
+        private void Logic_GameOver(object sender, EventArgs e)
+        {
+            display.InvalidateVisual();
+            MessageBox.Show(logic.Winner+" won!");
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -51,29 +59,13 @@ namespace Tictactoe
                 
                 int x = (int)e.GetPosition(grid).X;
                 int y = (int)e.GetPosition(grid).Y;
-                int cellnumbery = y / (int)(display.ActualHeight / 3);
-                int cellnumberx = x / (int)(display.ActualWidth / 3);
-               
-                
+                int cellnumbery = y / (int)(display.ActualHeight / logic.GameMatrix.GetLength(0));
+                int cellnumberx = x / (int)(display.ActualWidth /  logic.GameMatrix.GetLength(1));
+                               
                 int[] coord = { cellnumbery, cellnumberx };
-                //controller.MouseClicked(coord);
-                //display.InvalidateVisual();
-                //int centeri = (int)((cellnumbery) * display.ActualHeight / 3 - display.ActualHeight / 3 / 2);
-                //int centerj= (int)((cellnumberx) * display.ActualWidth / 3 + display.ActualWidth / 3 / 2);
-
-                //Line myLine = new Line();
-                //myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
-                //myLine.X1 = centerj;
-                //myLine.X2 = 0;
-                //myLine.Y1 = centeri;
-                //myLine.Y2 = 0;
-                //myLine.HorizontalAlignment = HorizontalAlignment.Left;
-                //myLine.VerticalAlignment = VerticalAlignment.Center;
-                //myLine.StrokeThickness = 2;
-                //grid.Children.Add(myLine);
-
-
-
+                controller.MouseClicked(coord);
+                display.InvalidateVisual();
+                
             }
 
         }

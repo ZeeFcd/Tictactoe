@@ -16,6 +16,7 @@ namespace Tictactoe.Logic
         }
 
         static Random r = new Random();
+        public string Winner { get; set; }
 
         public event EventHandler GameOver;
         public GameItem[,] GameMatrix { get; set; }
@@ -25,18 +26,8 @@ namespace Tictactoe.Logic
 
         public TictactoeLogic()
         {
-            GameMatrix = new GameItem[4, 4];
-            for (int i = 0; i < GameMatrix.GetLength(0); i++)
-            {
-                for (int j = 0; j < GameMatrix.GetLength(1); j++)
-                {
-                    GameMatrix[i, j]=GameItem.empty;
-                }
-            }
-
-            GameMatrix[1,2]= GameItem.o;
-            GameMatrix[1, 1] = GameItem.x;
-
+            GameMatrix = new GameItem[3, 3];
+            Mapreset();
 
         }
 
@@ -46,14 +37,19 @@ namespace Tictactoe.Logic
             LastStep = field;
             if (IsFinished())
             {
+                Winner = "You";
                 GameOver?.Invoke(this,null);
+                Mapreset();
             }
             else
             {
                 MachineStep();
                 if (IsFinished())
                 {
+                    Winner = "The game";
                     GameOver?.Invoke(this, null);
+                    Mapreset();
+
                 }
             }
         }
@@ -62,114 +58,159 @@ namespace Tictactoe.Logic
 
         private bool IsFinished()
         {
-            bool[,] used = new bool[GameMatrix.GetLength(0), GameMatrix.GetLength(1)];
+            
             int i = LastStep[0];
             int j = LastStep[1];
-
-            return false;
-        }
-
-        private bool SearchUp(int[] coord, GameItem[,] gameMatrix, GameItem searched) 
-        {
-            int n = coord[0] ;
-            
-            while (n>-1)
+            if (i==0)
             {
-                
-                if (n>-1&&gameMatrix[n,coord[1]]!= searched)
+                if (j == 0)
                 {
-                    n--;
+                    return SearchDown()||SearchRight() ||SearchRightDown();
                 }
-                
+                else if (j == 1)
+                {
+
+                    return SearchDown() ||(SearchLeft()&&SearchRight());
+                }
+                else
+                {
+                    return SearchDown() ||SearchLeft()||SearchLeftDown();
+                }
+            }
+            else if (i==1)
+            {
+                if (j == 0)
+                {
+                    return (SearchUp()&&SearchDown()) ||SearchRight();
+                }
+                else if (j == 1)
+                {
+                    return (SearchUp() && SearchDown()) || (SearchLeft() && SearchRight())||(SearchLeftUp()&&SearchRightDown())||(SearchLeftDown()&&SearchRightUp());
+                }
+                else
+                {
+                    return (SearchUp() && SearchDown())|| SearchLeft();
+                }
+            }
+            else
+            {
+                if (j == 0)
+                {
+                    return SearchUp()||SearchRight()||SearchRightUp() ;
+                }
+                else if (j == 1)
+                {
+                    return SearchUp() || (SearchLeft() && SearchRight());
+                }
+                else
+                {
+                    return SearchUp()||SearchLeft()||SearchLeftUp() ;
+                }
+
             }
 
-            return n > -1;
         }
-        private bool SearchDown(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+
+        private bool SearchUp() 
         {
-            int n = coord[0];
-            while (n < gameMatrix.GetLength(0)&& gameMatrix[n, coord[1]] != searched)
+            int n = LastStep[0] ;
+            
+            while (n>-1 && GameMatrix[n, LastStep[1]] == LastItem)
+            {                  
+                    n--;   
+            }
+
+            return n <0;
+        }
+        private bool SearchDown()
+        {
+            int n = LastStep[0];
+            while (n < GameMatrix.GetLength(0)&& GameMatrix[n, LastStep[1]] == LastItem)
             {
                 n++;
             }
 
-            return n < gameMatrix.GetLength(0);
+            return n == GameMatrix.GetLength(0);
         }
-        private bool SearchLeft(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+        private bool SearchLeft()
         {
-            int n = coord[1];
-            while (n > -1 && gameMatrix[coord[1],n] != searched)
+            int n = LastStep[1];
+            while (n > -1 && GameMatrix[LastStep[1],n] == LastItem)
             {
                 n--;
             }
 
-            return n > -1;
+            return n<0;
         }
-        private bool SearchRight(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+        private bool SearchRight()
         {
-            int n = coord[1];
-            while (n < gameMatrix.GetLength(1)&& gameMatrix[coord[1], n] != searched) 
+            int n = LastStep[1];
+            while (n < GameMatrix.GetLength(1)&& GameMatrix[LastStep[1], n] == LastItem) 
             {
                 n++;
             }
 
-            return n < gameMatrix.GetLength(1);
+            return n == GameMatrix.GetLength(1);
         }
-        private bool SearchLeftUp(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+        private bool SearchLeftUp()
         {
-            int n = coord[0];
-            int k = coord[1];
-            while (n > -1 && k>-1 && gameMatrix[n, k] != searched)
+            int n = LastStep[0];
+            int k = LastStep[1];
+            while (n > -1 && k>-1 && GameMatrix[n, k] == LastItem)
             {
                 n--;
                 k--;
             }
 
-            return n > -1 && k > -1;
+            return n < 0 || k < 0;
         }
-        private bool SearchRightUp(int[] coord, GameItem[,] gameMatrix, GameItem searched) 
+        private bool SearchRightUp() 
         {
-            int n = coord[0];
-            int k = coord[1];
-            while (n < gameMatrix.GetLength(1) && k>-1 && gameMatrix[n, k] != searched)
+            int n = LastStep[0];
+            int k = LastStep[1];
+            while (n < GameMatrix.GetLength(0) && k>-1 && GameMatrix[n, k] == LastItem)
             {
                 n++;
                 k--;
             }
 
-            return n < gameMatrix.GetLength(1) && k > -1;
+            return n == GameMatrix.GetLength(0) || k < 0;
         }
-        private bool SearchRightDown(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+        private bool SearchRightDown()
         {
-            int n = coord[0];
-            int k = coord[1];
-            while (n < gameMatrix.GetLength(1) && k < gameMatrix.GetLength(1) && gameMatrix[n, k] != searched)
+            int n = LastStep[0];
+            int k = LastStep[1];
+            while (n < GameMatrix.GetLength(0) && k < GameMatrix.GetLength(1) && GameMatrix[n, k] == LastItem)
             {
                 n++;
                 k++;
             }
 
-            return n < gameMatrix.GetLength(1) && k < gameMatrix.GetLength(1);
+            return n == GameMatrix.GetLength(0) || k == GameMatrix.GetLength(1);
         }
-        private bool SearchLeftDown(int[] coord, GameItem[,] gameMatrix, GameItem searched)
+        private bool SearchLeftDown()
         {
-            int n = coord[0];
-            int k = coord[1];
-            while (n > -1 && k < gameMatrix.GetLength(1) && gameMatrix[n, k] != searched)
+            int n = LastStep[0];
+            int k = LastStep[1];
+            while (n > -1 && k < GameMatrix.GetLength(1) && GameMatrix[n, k] == LastItem)
             {
                 n--;
                 k++;
             }
 
-            return n > -1 && k < gameMatrix.GetLength(1);
+            return n < 0 || k == GameMatrix.GetLength(1);
         }
-        
 
-
-
-
-
-
+        private void Mapreset() 
+        {
+            for (int i = 0; i < GameMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMatrix.GetLength(1); j++)
+                {
+                    GameMatrix[i, j] = GameItem.empty;
+                }
+            }
+        }
 
         private List<int[]> EmptyFields() 
         {
