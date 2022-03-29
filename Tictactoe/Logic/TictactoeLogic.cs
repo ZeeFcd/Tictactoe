@@ -33,28 +33,31 @@ namespace Tictactoe.Logic
 
         public void Step(int[] field)
         {
-            GameMatrix[field[0], field[1]] = GameItem.x;
-            LastStep = field;
-            if (IsFinished())
+            if (GameMatrix[field[0], field[1]] == GameItem.empty)
             {
-                Winner = "You";
-                GameOver?.Invoke(this,null);
-                Mapreset();
-            }
-            else
-            {
-                MachineStep();
+                GameMatrix[field[0], field[1]] = GameItem.x;
+                LastStep = field;
+                LastItem = GameItem.x;
                 if (IsFinished())
                 {
-                    Winner = "The game";
+                    Winner = "You";
                     GameOver?.Invoke(this, null);
                     Mapreset();
-
                 }
+                else
+                {
+                    MachineStep();
+                    if (IsFinished())
+                    {
+                        Winner = "The game";
+                        GameOver?.Invoke(this, null);
+                        Mapreset();
+                    }
+                }
+
             }
+
         }
-
-
 
         private bool IsFinished()
         {
@@ -69,12 +72,11 @@ namespace Tictactoe.Logic
                 }
                 else if (j == 1)
                 {
-
                     return SearchDown() ||(SearchLeft()&&SearchRight());
                 }
                 else
                 {
-                    return SearchDown() ||SearchLeft()||SearchLeftDown();
+                    return SearchDown() || SearchLeft() || SearchLeftDown();
                 }
             }
             else if (i==1)
@@ -135,7 +137,8 @@ namespace Tictactoe.Logic
         private bool SearchLeft()
         {
             int n = LastStep[1];
-            while (n > -1 && GameMatrix[LastStep[1],n] == LastItem)
+            ;
+            while (n > -1 && GameMatrix[LastStep[0],n] == LastItem)
             {
                 n--;
             }
@@ -145,7 +148,7 @@ namespace Tictactoe.Logic
         private bool SearchRight()
         {
             int n = LastStep[1];
-            while (n < GameMatrix.GetLength(1)&& GameMatrix[LastStep[1], n] == LastItem) 
+            while (n < GameMatrix.GetLength(1)&& GameMatrix[LastStep[0], n] == LastItem) 
             {
                 n++;
             }
@@ -168,13 +171,13 @@ namespace Tictactoe.Logic
         {
             int n = LastStep[0];
             int k = LastStep[1];
-            while (n < GameMatrix.GetLength(0) && k>-1 && GameMatrix[n, k] == LastItem)
+            while (n > -1 && k< GameMatrix.GetLength(1) && GameMatrix[n, k] == LastItem)
             {
-                n++;
-                k--;
+                n--;
+                k++;
             }
 
-            return n == GameMatrix.GetLength(0) || k < 0;
+            return n <0 || k == GameMatrix.GetLength(1);
         }
         private bool SearchRightDown()
         {
@@ -192,13 +195,13 @@ namespace Tictactoe.Logic
         {
             int n = LastStep[0];
             int k = LastStep[1];
-            while (n > -1 && k < GameMatrix.GetLength(1) && GameMatrix[n, k] == LastItem)
+            while (n < GameMatrix.GetLength(0) && k > -1 && GameMatrix[n, k] == LastItem)
             {
-                n--;
-                k++;
+                n++;
+                k--;
             }
 
-            return n < 0 || k == GameMatrix.GetLength(1);
+            return n == GameMatrix.GetLength(0) || k <0;
         }
 
         private void Mapreset() 
@@ -236,12 +239,15 @@ namespace Tictactoe.Logic
         private void MachineStep() 
         {
             List<int[]> empty = EmptyFields();
-            int[] field= empty[r.Next(0, empty.Count)];
-            GameMatrix[field[0], field[1]] = GameItem.o;
-            LastStep = field;
-
+            if (empty.Count>0)
+            {
+                int[] field = empty[r.Next(0, empty.Count)];
+                GameMatrix[field[0], field[1]] = GameItem.o;
+                LastStep = field;
+                LastItem = GameItem.o;
+            }
+              
         }
        
-
     }
 }
