@@ -119,39 +119,46 @@ namespace Tictactoe.Logic
             while (n > -1 && k>-1 && gameMatrix[n, k] != searched)
             {
                 n--;
+                k--;
             }
 
-            return n > -1;
+            return n > -1 && k > -1;
         }
         private bool SearchRightUp(int[] coord, GameItem[,] gameMatrix, GameItem searched) 
         {
-            int n = coord;
-            while (n > -1)
+            int n = coord[0];
+            int k = coord[1];
+            while (n < gameMatrix.GetLength(1) && k>-1 && gameMatrix[n, k] != searched)
             {
-                n--;
+                n++;
+                k--;
             }
 
-            return n > -1;
+            return n < gameMatrix.GetLength(1) && k > -1;
         }
         private bool SearchRightDown(int[] coord, GameItem[,] gameMatrix, GameItem searched)
         {
-            int n = coord;
-            while (n > -1)
+            int n = coord[0];
+            int k = coord[1];
+            while (n < gameMatrix.GetLength(1) && k < gameMatrix.GetLength(1) && gameMatrix[n, k] != searched)
             {
-                n--;
+                n++;
+                k++;
             }
 
-            return n > -1;
+            return n < gameMatrix.GetLength(1) && k < gameMatrix.GetLength(1);
         }
         private bool SearchLeftDown(int[] coord, GameItem[,] gameMatrix, GameItem searched)
         {
-            int n = coord;
-            while (n > -1)
+            int n = coord[0];
+            int k = coord[1];
+            while (n > -1 && k < gameMatrix.GetLength(1) && gameMatrix[n, k] != searched)
             {
                 n--;
+                k++;
             }
 
-            return n > -1;
+            return n > -1 && k < gameMatrix.GetLength(1);
         }
         
 
